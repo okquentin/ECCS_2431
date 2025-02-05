@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Pizza Party</string>
+    <string name="num_people">Number of people?</string>
+    <string name="how_hungry">How hungry?</string>
+    <string name="total_pizzas">Total pizzas: ?</string>
+    <string name="total_pizzas_num">Total pizzas: %d</string>
+    <string name="light">Light</string>
+    <string name="medium">Medium</string>
+    <string name="ravenous">Ravenous</string>
+    <string name="calculate">Calculate</string>
+    <string name="shop_name">Polaris Pizza Place</string>
+    <string name="instructions">"Enter the number of expected guests and select how hungry they are"</string>
 </resources>

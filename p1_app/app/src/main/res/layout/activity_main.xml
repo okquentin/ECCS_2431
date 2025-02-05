@@ -1,19 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@drawable/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16dp"
+
     tools:context=".MainActivity">
 
+    <!-- Shop Name -->
     <TextView
+        android:textColor="@color/white"
+        android:id="@+id/shop_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/shop_name"
+        android:textSize="30sp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Instructions -->
+    <TextView
+        android:textColor="@color/white"
+        android:id="@+id/instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/instructions"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/shop_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Number of People Label -->
+    <TextView
+        android:textColor="@color/white"
+        android:id="@+id/num_people_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="@string/num_people"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/instructions" />
+
+    <!-- Number of People EditText -->
+    <EditText
+        android:textColor="@color/white"
+        android:id="@+id/num_attend_edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ems="5"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:minHeight="48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/num_people_label" />
+
+    <!-- "How Hungry" Label -->
+    <TextView
+        android:textColor="@color/white"
+        android:id="@+id/how_hungry_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/how_hungry"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/num_attend_edit_text" />
+
+    <!-- Hunger Level RadioGroup -->
+    <RadioGroup
+        android:textColor="@color/white"
+        android:id="@+id/hungry_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/how_hungry_label">
+
+        <RadioButton
+            android:textColor="@color/white"
+            android:id="@+id/light_radio_button"
+            android:layout_width="78dp"
+            android:layout_height="wrap_content"
+            android:text="@string/light" />
+
+        <RadioButton
+            android:textColor="@color/white"
+            android:id="@+id/medium_radio_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/medium" />
+
+        <RadioButton
+            android:textColor="@color/white"
+            android:id="@+id/ravenous_radio_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ravenous" />
+    </RadioGroup>
+
+    <!-- Hunger Level Images -->
+    <ImageView
+        android:id="@+id/hungry_image_view"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/light"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Total Pizzas -->
+    <TextView
+        android:textColor="@color/white"
+        android:id="@+id/num_pizzas_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:text="@string/total_pizzas"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@id/hungry_radio_group"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/num_people_label"
+        app:layout_constraintVertical_bias="0.456" />
+
+    <!-- Calculate Button -->
+    <Button
+        android:id="@+id/calc_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="calculateClick"
+        android:text="@string/calculate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
