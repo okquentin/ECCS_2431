@@ -1,7 +1,9 @@
 package com.zybooks.diceroller
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.ContextMenu
 import android.view.GestureDetector
 import android.view.Menu
@@ -9,15 +11,32 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
 import kotlin.math.abs
 
-const val MAX_DICE = 3
+const val MAX_DICE = 2
+
+
 
 class MainActivity : AppCompatActivity(),
-    RollLengthDialogFragment.OnRollLengthSelectedListener{
+    RollLengthDialogFragment.OnRollLengthSelectedListener {
+
+    private lateinit var messageTextView: TextView
+    private lateinit var turnTextView: TextView
+    private lateinit var scoreTextView: TextView
+    private var winThreshold = 10
+    private var playerScores = mutableListOf(0, 0)
+    private var playerRolls = mutableListOf(0, 0)
+    private var currentPlayer = 0 // Start w/ player 1
+    private var roundNum = 1
+    private var gameOver = false
+    private var tie = false
+    private var numPlayers = 2 // Default 2 players, will change based on intro screen
+
 
     private var numVisibleDice = MAX_DICE
     private lateinit var diceList: MutableList<Dice>
@@ -40,6 +59,17 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Get the number of players passed from the IntroActivity
+        numPlayers = intent.getIntExtra("numPlayers", 2)
+        messageTextView = findViewById(R.id.messageText)
+        turnTextView = findViewById(R.id.turnText)
+
+        // Initialize player scores for 3 players if needed
+        if (numPlayers == 3) {
+            playerScores = mutableListOf(0, 0, 0)
+            playerRolls = mutableListOf(0, 0, 0)
+        }
+
         // Create list of Dice
         diceList = mutableListOf()
         for (i in 0 until MAX_DICE) {
@@ -48,7 +78,8 @@ class MainActivity : AppCompatActivity(),
 
         // Create list of ImageViews
         diceImageViewList = mutableListOf(
-            findViewById(R.id.dice1), findViewById(R.id.dice2), findViewById(R.id.dice3))
+            findViewById(R.id.dice1), findViewById(R.id.dice2)
+        )
 
         showDice()
 
@@ -65,6 +96,7 @@ class MainActivity : AppCompatActivity(),
                 MotionEvent.ACTION_DOWN -> {
                     initTouchX = event.x.toInt()
                 }
+
                 MotionEvent.ACTION_MOVE -> {
                     val x = event.x.toInt()
 
@@ -79,9 +111,11 @@ class MainActivity : AppCompatActivity(),
                         initTouchX = x
                     }
                 }
+
                 MotionEvent.ACTION_UP -> {
                     v.performClick() // Ensures proper click handling
                 }
+
                 else -> returnVal = false
             }
             returnVal
@@ -115,35 +149,23 @@ class MainActivity : AppCompatActivity(),
 
         // Determine which menu option was chosen
         return when (item.itemId) {
-            R.id.action_one -> {
-                changeDiceVisibility(1)
-                showDice()
-                true
-            }
-            R.id.action_two -> {
-                changeDiceVisibility(2)
-                showDice()
-                true
-            }
-            R.id.action_three -> {
-                changeDiceVisibility(3)
-                showDice()
-                true
-            }
             R.id.action_stop -> {
                 timer?.cancel()
                 item.isVisible = false
                 true
             }
+
             R.id.action_roll -> {
                 rollDice()
                 true
             }
+
             R.id.action_roll_length -> {
                 val dialog = RollLengthDialogFragment()
                 dialog.show(supportFragmentManager, "rollLengthDialog")
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -154,7 +176,11 @@ class MainActivity : AppCompatActivity(),
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+    override fun onCreateContextMenu(
+        menu: ContextMenu?,
+        v: View?,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
         super.onCreateContextMenu(menu, v, menuInfo)
 
         // Save which die is selected
@@ -170,15 +196,18 @@ class MainActivity : AppCompatActivity(),
                 showDice()
                 true
             }
+
             R.id.subtract_one -> {
                 diceList[selectedDie].number--
                 showDice()
                 true
             }
+
             R.id.roll -> {
                 rollDice()
                 true
             }
+
             else -> super.onContextItemSelected(item)
         }
     }
@@ -190,20 +219,6 @@ class MainActivity : AppCompatActivity(),
             val diceDrawable = ContextCompat.getDrawable(this, diceList[i].imageId)
             diceImageViewList[i].setImageDrawable(diceDrawable)
             diceImageViewList[i].contentDescription = diceList[i].imageId.toString()
-        }
-    }
-
-    private fun changeDiceVisibility(numVisible: Int) {
-        numVisibleDice = numVisible
-
-        // Make dice visible
-        for (i in 0 until numVisible) {
-            diceImageViewList[i].visibility = View.VISIBLE
-        }
-
-        // Hide remaining dice
-        for (i in numVisible until MAX_DICE) {
-            diceImageViewList[i].visibility = View.GONE
         }
     }
 
@@ -222,8 +237,78 @@ class MainActivity : AppCompatActivity(),
 
             override fun onFinish() {
                 optionsMenu.findItem(R.id.action_stop).isVisible = false
+                showDice()  // Display dice after rolling
+
+                // Update player roll for the current player
+                val diceValues = diceList.map { it.number }
+
+                // Sort the dice values to create the highest two-digit number
+                playerRolls[currentPlayer] = diceValues.sortedDescending().joinToString("").toInt()
+
+                // Check if the current player is the last player in the round
+                if (currentPlayer == numPlayers - 1) {
+                    // Find the player with the highest score
+                    val highestScore = playerRolls.maxOrNull()
+                    val winningPlayer = playerRolls.indexOf(highestScore) + 1
+
+                    val winningPlayers = playerRolls.withIndex()
+                        .filter { it.value == highestScore }
+                        .map { it.index + 1 } // Get player numbers (1-indexed)
+
+                    if (winningPlayers.size > 1) {
+                        messageTextView.text = "Round $roundNum is a tie between Players ${winningPlayers.joinToString(", ")} with score $highestScore"
+                        tie = true
+                    }
+                    else {
+                        if (tie) {
+                            playerScores[winningPlayer - 1] += 2  // -1 because player index is 1-based
+                            tie = false
+                        }
+                        else {
+                            playerScores[winningPlayer - 1] += 1 // -1 because player index is 1-based
+                        }
+                        // Display the winner and start a new round
+                        messageTextView.text = "Round $roundNum Winner: Player $winningPlayer with score $highestScore"
+                        roundNum++ // Increment round after showing the winner
+                    }
+
+                    // Check if any player's score is >= winThreshold
+                    val isAnyPlayerWinner = playerScores.any { it >= winThreshold}
+
+                    if (isAnyPlayerWinner) {
+                        val winner = playerScores.indexOfFirst { it >= winThreshold} + 1 // +1 to make the player number 1-based
+                        // Pass the winner's player number as an extra
+                        val intent = Intent(this@MainActivity, GameOverActivity::class.java)
+                        intent.putExtra("WINNING_PLAYER", winner)  // Put the winner's player number
+                        startActivity(intent) // Navigate to the new activity
+                    }
+                    else {
+                        // If no player has reached the winning score
+                        currentPlayer = 0  // Reset the current player for the next round
+                    }
+                    // Update the scoreTextView with the current player scores
+                    Log.d("RollDice", "Player scores: $playerScores")
+                }
+                else {
+                    // Move to the next player if not the last one
+                    currentPlayer++
+                }
+
+                updateTurn()
             }
         }.start()
     }
-}
 
+    private fun updateTurn() {
+        // Update the message based on the game state
+        turnTextView.text = "Player ${currentPlayer + 1}'s turn!"
+    }
+
+
+
+    // Not Currently Used
+    private fun resetGame() {
+        gameOver = false
+        currentPlayer = 0
+    }
+}
