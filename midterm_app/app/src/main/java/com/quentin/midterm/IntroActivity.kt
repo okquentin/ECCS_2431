@@ -13,21 +13,15 @@ class IntroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro)
 
-        val button2Player = findViewById<Button>(R.id.button2Player)
-        val button3Player = findViewById<Button>(R.id.button3Player)
+        val startGameButton = findViewById<Button>(R.id.startGameButton)
 
-        button2Player.setOnClickListener {
-            startGame(2)
-        }
-
-        button3Player.setOnClickListener {
-            startGame(3)
+        startGameButton.setOnClickListener {
+            startGame()
         }
     }
 
-    private fun startGame(numPlayers: Int) {
+    private fun startGame() {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("numPlayers", numPlayers)
         startActivity(intent)
         finish() // Close the intro screen
     }

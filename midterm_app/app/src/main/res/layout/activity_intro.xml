@@ -16,15 +16,8 @@
         android:textStyle="bold" />
 
     <Button
-        android:id="@+id/button2Player"
-        android:text="2 Player"
+        android:id="@+id/startGameButton"
+        android:text="Start Game"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/button3Player"
-        android:text="3 Player"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"/>
 </LinearLayout>

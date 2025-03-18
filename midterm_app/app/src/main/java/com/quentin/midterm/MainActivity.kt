@@ -10,7 +10,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,23 +22,18 @@ import kotlin.math.abs
 
 const val MAX_DICE = 2
 
-
-
 class MainActivity : AppCompatActivity(),
     RollLengthDialogFragment.OnRollLengthSelectedListener {
 
     private lateinit var messageTextView: TextView
-    private lateinit var turnTextView: TextView
-    private lateinit var scoreTextView: TextView
-    private var winThreshold = 10
-    private var playerScores = mutableListOf(0, 0)
-    private var playerRolls = mutableListOf(0, 0)
-    private var currentPlayer = 0 // Start w/ player 1
-    private var roundNum = 1
-    private var gameOver = false
-    private var tie = false
-    private var numPlayers = 2 // Default 2 players, will change based on intro screen
 
+    private lateinit var branchTextView: TextView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var restartButton: Button
+
+    private var winThreshold = 30
+    private var currentBranch = 0
+    private var skipNextRoll = false
 
     private var numVisibleDice = MAX_DICE
     private lateinit var diceList: MutableList<Dice>
@@ -49,6 +46,7 @@ class MainActivity : AppCompatActivity(),
     private lateinit var gestureDetector: GestureDetectorCompat
 
 
+
     override fun onRollLengthClick(which: Int) {
         // Convert to milliseconds
         timerLength = 1000L * (which + 1)
@@ -59,16 +57,8 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Get the number of players passed from the IntroActivity
-        numPlayers = intent.getIntExtra("numPlayers", 2)
         messageTextView = findViewById(R.id.messageText)
-        turnTextView = findViewById(R.id.turnText)
-
-        // Initialize player scores for 3 players if needed
-        if (numPlayers == 3) {
-            playerScores = mutableListOf(0, 0, 0)
-            playerRolls = mutableListOf(0, 0, 0)
-        }
+        branchTextView = findViewById(R.id.branchText)
 
         // Create list of Dice
         diceList = mutableListOf()
@@ -138,6 +128,13 @@ class MainActivity : AppCompatActivity(),
                 }
             }
         )
+
+        progressBar = findViewById(R.id.progressBar)
+        restartButton = findViewById(R.id.restartButton)
+
+        restartButton.setOnClickListener {
+            resetGame()
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -223,6 +220,12 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun rollDice() {
+        if (skipNextRoll) {
+            messageTextView.text = "Pooh skips this roll due to bee swarm!"
+            skipNextRoll = false
+            return
+        }
+
         optionsMenu.findItem(R.id.action_stop).isVisible = true
         timer?.cancel()
 
@@ -239,76 +242,45 @@ class MainActivity : AppCompatActivity(),
                 optionsMenu.findItem(R.id.action_stop).isVisible = false
                 showDice()  // Display dice after rolling
 
-                // Update player roll for the current player
                 val diceValues = diceList.map { it.number }
+                val total = diceValues.sum()
 
-                // Sort the dice values to create the highest two-digit number
-                playerRolls[currentPlayer] = diceValues.sortedDescending().joinToString("").toInt()
-
-                // Check if the current player is the last player in the round
-                if (currentPlayer == numPlayers - 1) {
-                    // Find the player with the highest score
-                    val highestScore = playerRolls.maxOrNull()
-                    val winningPlayer = playerRolls.indexOf(highestScore) + 1
-
-                    val winningPlayers = playerRolls.withIndex()
-                        .filter { it.value == highestScore }
-                        .map { it.index + 1 } // Get player numbers (1-indexed)
-
-                    if (winningPlayers.size > 1) {
-                        messageTextView.text = "Round $roundNum is a tie between Players ${winningPlayers.joinToString(", ")} with score $highestScore"
-                        tie = true
+                if (diceValues[0] == diceValues[1]) {
+                    currentBranch = maxOf(0, currentBranch - 4)
+                    messageTextView.text = "Doubles Penalty! Pooh slips down to Branch $currentBranch"
+                } else if (total == 4) {
+                    messageTextView.text = "Windy Day Challenge! Pooh stays on Branch $currentBranch"
+                } else {
+                    currentBranch += total
+                    if (currentBranch > 30) {
+                        currentBranch = 30
                     }
-                    else {
-                        if (tie) {
-                            playerScores[winningPlayer - 1] += 2  // -1 because player index is 1-based
-                            tie = false
-                        }
-                        else {
-                            playerScores[winningPlayer - 1] += 1 // -1 because player index is 1-based
-                        }
-                        // Display the winner and start a new round
-                        messageTextView.text = "Round $roundNum Winner: Player $winningPlayer with score $highestScore"
-                        roundNum++ // Increment round after showing the winner
-                    }
-
-                    // Check if any player's score is >= winThreshold
-                    val isAnyPlayerWinner = playerScores.any { it >= winThreshold}
-
-                    if (isAnyPlayerWinner) {
-                        val winner = playerScores.indexOfFirst { it >= winThreshold} + 1 // +1 to make the player number 1-based
-                        // Pass the winner's player number as an extra
-                        val intent = Intent(this@MainActivity, GameOverActivity::class.java)
-                        intent.putExtra("WINNING_PLAYER", winner)  // Put the winner's player number
-                        startActivity(intent) // Navigate to the new activity
-                    }
-                    else {
-                        // If no player has reached the winning score
-                        currentPlayer = 0  // Reset the current player for the next round
-                    }
-                    // Update the scoreTextView with the current player scores
-                    Log.d("RollDice", "Player scores: $playerScores")
-                }
-                else {
-                    // Move to the next player if not the last one
-                    currentPlayer++
+                    messageTextView.text = "Pooh climbs to Branch $currentBranch"
                 }
 
-                updateTurn()
+                if (currentBranch == 10 || currentBranch == 20) {
+                    skipNextRoll = true
+                    messageTextView.text = "Bee Swarm Trouble! Pooh will skip the next roll."
+                }
+
+                progressBar.progress = currentBranch
+                branchTextView.text = "Branch $currentBranch"
+
+                if (currentBranch >= 30) {
+                    messageTextView.text = "Pooh reaches Branch $currentBranch and gets some honey!"
+                    val intent = Intent(this@MainActivity, GameOverActivity::class.java)
+                    startActivity(intent)
+                    finish() // End the current activity
+                }
             }
         }.start()
     }
 
-    private fun updateTurn() {
-        // Update the message based on the game state
-        turnTextView.text = "Player ${currentPlayer + 1}'s turn!"
-    }
-
-
-
-    // Not Currently Used
     private fun resetGame() {
-        gameOver = false
-        currentPlayer = 0
+        currentBranch = 0
+        skipNextRoll = false
+        progressBar.progress = 0
+        branchTextView.text = "Branch 0"
+        messageTextView.text = "Game Starts!"
     }
 }
