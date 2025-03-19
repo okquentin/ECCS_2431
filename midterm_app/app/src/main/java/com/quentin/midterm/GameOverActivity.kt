@@ -2,19 +2,21 @@ package com.quentin.midterm
 
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
 class GameOverActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_gameover)  // Make sure you have the corresponding XML layout
+        setContentView(R.layout.activity_gameover)  // Ensure this layout exists
 
         // Find the TextView in the layout
         val winnerTextView: TextView = findViewById(R.id.winnerTextView) // Ensure this ID is in your layout
-        
-        winnerTextView.text = "Player Wins!"
+        winnerTextView.text = "Pooh reaches Branch 30 and gets some honey!"
 
-        // Want to display winny the poo eating honey at the end
+        // Find the ImageView in the layout
+        val winnerImageView: ImageView = findViewById(R.id.winnerImageView) // Ensure this ID is in your layout
+        winnerImageView.setImageResource(R.drawable.pooh_honey) // Ensure this drawable exists
     }
 }

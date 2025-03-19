@@ -270,7 +270,7 @@ class MainActivity : AppCompatActivity(),
                     messageTextView.text = "Pooh reaches Branch $currentBranch and gets some honey!"
                     val intent = Intent(this@MainActivity, GameOverActivity::class.java)
                     startActivity(intent)
-                    finish() // End the current activity
+                    finish() // Ensure the current activity is finished
                 }
             }
         }.start()
