@@ -9,14 +9,6 @@
     android:layout_height="match_parent"
     tools:context="com.zybooks.diceroller.MainActivity">
 
-    <TextView
-        android:id="@+id/messageText"
-        android:text="Game Starts!"
-        android:textSize="18sp"
-        android:layout_marginBottom="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
     <ImageView
         android:id="@+id/dice1"
         android:layout_width="match_parent"
@@ -34,6 +26,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <TextView
+        android:id="@+id/messageText"
+        android:text="Game Starts!"
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <ImageView
         android:id="@+id/dice2"
         android:layout_width="match_parent"
@@ -42,6 +42,15 @@
         android:contentDescription="@string/dice_two"
         android:src="@drawable/dice_1"
         app:tint="@color/red_900" />
+
+
+    <TextView
+        android:id="@+id/rollsRemainingText"
+        android:text="Rolls Remaining: 8"
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

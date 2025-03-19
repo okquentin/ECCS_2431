@@ -16,6 +16,8 @@
     <string name="normal">Normal</string>
     <string name="hard">Hard</string>
 
+    <string name="return_button">Return to menu</string>
+
     <!-- Dialog title -->
     <string name="pick_roll_length">Roll length?</string>
 

@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity(),
     private lateinit var branchTextView: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var restartButton: Button
+    private lateinit var rollsRemainingTextView: TextView
 
     private var winThreshold = 30
     private var currentBranch = 0
@@ -44,6 +45,9 @@ class MainActivity : AppCompatActivity(),
     private var initTouchX = 0
     private lateinit var gestureDetector: GestureDetectorCompat
 
+    private var rollLimit = 8
+    private var currentRollCount = 0
+
     override fun onRollLengthClick(which: Int) {
         // Convert to milliseconds
         timerLength = 1000L * (which + 1)
@@ -57,8 +61,17 @@ class MainActivity : AppCompatActivity(),
         val difficulty = intent.getStringExtra("difficulty")
         Log.d("MainActivity", "Selected difficulty: $difficulty")
 
+        // Set roll limit based on difficulty
+        rollLimit = when (difficulty) {
+            "Easy" -> 10
+            "Normal" -> 8
+            "Hard" -> 5
+            else -> 8
+        }
+
         messageTextView = findViewById(R.id.messageText)
         branchTextView = findViewById(R.id.branchText)
+        rollsRemainingTextView = findViewById(R.id.rollsRemainingText)
 
         // Create list of Dice
         diceList = mutableListOf()
@@ -135,6 +148,8 @@ class MainActivity : AppCompatActivity(),
         restartButton.setOnClickListener {
             resetGame()
         }
+
+        updateRollsRemaining()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -222,6 +237,15 @@ class MainActivity : AppCompatActivity(),
         if (skipNextRoll) {
             messageTextView.text = "Pooh skips this roll due to bee swarm!"
             skipNextRoll = false
+            currentRollCount++
+            updateRollsRemaining()
+            return
+        }
+
+        if (currentRollCount >= rollLimit) {
+            val intent = Intent(this@MainActivity, GameOverActivity::class.java)
+            startActivity(intent)
+            finish() // Ensure the current activity is finished
             return
         }
 
@@ -266,13 +290,20 @@ class MainActivity : AppCompatActivity(),
                 branchTextView.text = "Branch $currentBranch"
 
                 if (currentBranch >= 30) {
-                    messageTextView.text = "Pooh reaches Branch $currentBranch and gets some honey!"
                     val intent = Intent(this@MainActivity, GameOverActivity::class.java)
+                    intent.putExtra("isWinner", currentBranch >= 30)
                     startActivity(intent)
                     finish() // Ensure the current activity is finished
                 }
+
+                currentRollCount++
+                updateRollsRemaining()
             }
         }.start()
+    }
+
+    private fun updateRollsRemaining() {
+        rollsRemainingTextView.text = "Rolls Remaining: ${rollLimit - currentRollCount}"
     }
 
     private fun resetGame() {
@@ -281,5 +312,7 @@ class MainActivity : AppCompatActivity(),
         progressBar.progress = 0
         branchTextView.text = "Branch 0"
         messageTextView.text = "Game Starts!"
+        currentRollCount = 0
+        updateRollsRemaining()
     }
 }
