@@ -5,6 +5,8 @@
     <string name="return_to_menu">Return to menu</string>
     <string name="action_stop">Stop</string>
 
+    <string name="game_intro">You spot honey near the top of the tree</string>
+
     <string name="dice_one">1</string>
     <string name="dice_two">2</string>
 

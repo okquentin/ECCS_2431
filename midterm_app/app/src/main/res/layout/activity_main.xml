@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/messageText"
-        android:text="Game Starts!"
+        android:text="@string/game_intro"
         android:textSize="18sp"
         android:layout_marginBottom="20dp"
         android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
 
     <TextView
         android:id="@+id/rollsRemainingText"
-        android:text="Rolls Remaining: 8"
+        android:text="Placeholder"
         android:textSize="18sp"
         android:layout_marginBottom="20dp"
         android:layout_width="wrap_content"
