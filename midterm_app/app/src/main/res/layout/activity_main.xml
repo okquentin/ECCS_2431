@@ -7,7 +7,9 @@
     android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.zybooks.diceroller.MainActivity">
+    android:paddingTop="32dp"
+    tools:context="com.zybooks.diceroller.MainActivity"
+    android:background="@drawable/background_main">
 
     <ImageView
         android:id="@+id/dice1"
@@ -16,7 +18,9 @@
         android:layout_weight="1"
         android:contentDescription="@string/dice_one"
         android:src="@drawable/dice_1"
-        app:tint="@color/red_900" />
+        app:tint="@color/red_900"
+        android:paddingTop="10dp"
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/branchText"
@@ -24,7 +28,9 @@
         android:textSize="18sp"
         android:layout_marginBottom="20dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:padding="4dp"/>
 
     <TextView
         android:id="@+id/messageText"
@@ -32,7 +38,9 @@
         android:textSize="18sp"
         android:layout_marginBottom="20dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:padding="4dp"/>
 
     <ImageView
         android:id="@+id/dice2"
@@ -50,7 +58,9 @@
         android:textSize="18sp"
         android:layout_marginBottom="20dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:padding="4dp"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

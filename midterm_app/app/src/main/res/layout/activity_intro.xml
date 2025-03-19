@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background = "@drawable/background_intro">
 
     <TextView
         android:id="@+id/gameTitle"
@@ -13,7 +14,9 @@
         android:layout_marginBottom="40dp"
         android:text="@string/game_title"
         android:textSize="30sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:background="#FFFFFF"
+        android:padding="4dp" />
 
     <Button
         android:id="@+id/easyButton"
