@@ -22,6 +22,9 @@ import kotlin.math.abs
 
 const val MAX_DICE = 2
 
+/**
+ * The main activity of the app where the game logic is implemented.
+ */
 class MainActivity : AppCompatActivity(),
     RollLengthDialogFragment.OnRollLengthSelectedListener {
 
@@ -50,11 +53,19 @@ class MainActivity : AppCompatActivity(),
     private var rollsRemaining = rollLimit
     private var difficulty = "User Selected"
 
+    /**
+     * Handles the roll length selection from the dialog.
+     * @param which The index of the selected roll length.
+     */
     override fun onRollLengthClick(which: Int) {
         // Convert to milliseconds
         timerLength = 1000L * (which + 1)
     }
 
+    /**
+     * Initializes the activity.
+     * @param savedInstanceState The last saved instance state of the Activity, or null if this is a freshly created Activity.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -153,11 +164,21 @@ class MainActivity : AppCompatActivity(),
         updateRollsRemaining()
     }
 
+    /**
+     * Handles touch events for gesture detection.
+     * @param event The motion event.
+     * @return True if the event was handled, false otherwise.
+     */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
         return super.onTouchEvent(event)
     }
 
+    /**
+     * Handles options menu item selection.
+     * @param item The selected menu item.
+     * @return True if the item was handled, false otherwise.
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         // Determine which menu option was chosen
@@ -190,12 +211,23 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    /**
+     * Creates the options menu.
+     * @param menu The options menu.
+     * @return True if the menu was created, false otherwise.
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.appbar_menu, menu)
         optionsMenu = menu!!
         return super.onCreateOptionsMenu(menu)
     }
 
+    /**
+     * Creates the context menu.
+     * @param menu The context menu.
+     * @param v The view for which the context menu is being built.
+     * @param menuInfo Extra information about the item for which the context menu should be shown.
+     */
     override fun onCreateContextMenu(
         menu: ContextMenu?,
         v: View?,
@@ -209,6 +241,11 @@ class MainActivity : AppCompatActivity(),
         menuInflater.inflate(R.menu.context_menu, menu)
     }
 
+    /**
+     * Handles context menu item selection.
+     * @param item The selected context menu item.
+     * @return True if the item was handled, false otherwise.
+     */
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.add_one -> {
@@ -232,6 +269,9 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    /**
+     * Displays the dice images based on their current values.
+     */
     private fun showDice() {
         // Show visible dice
         for (i in 0 until numVisibleDice) {
@@ -241,6 +281,9 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    /**
+     * Rolls the dice and updates the game state.
+     */
     private fun rollDice() {
 
         currentRollCount++
@@ -323,11 +366,17 @@ class MainActivity : AppCompatActivity(),
         }.start()
     }
 
+    /**
+     * Updates the text view displaying the number of rolls remaining.
+     */
     private fun updateRollsRemaining() {
         rollsRemaining = rollLimit - currentRollCount
         rollsRemainingTextView.text = "Rolls Remaining: $rollsRemaining"
     }
 
+    /**
+     * Resets the game to its initial state.
+     */
     private fun resetGame() {
         currentBranch = 0
         skipNextRoll = false

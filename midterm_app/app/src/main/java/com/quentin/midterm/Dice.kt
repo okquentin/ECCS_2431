@@ -3,6 +3,10 @@ package com.quentin.midterm
 const val LARGEST_NUM = 6
 const val SMALLEST_NUM = 1
 
+/**
+ * A class representing a dice with a number and an image.
+ * @param diceNumber The initial number of the dice.
+ */
 class Dice(diceNumber: Int) {
     var imageId = 0
 
@@ -25,6 +29,9 @@ class Dice(diceNumber: Int) {
         number = diceNumber
     }
 
+    /**
+     * Rolls the dice and sets its number to a random value between SMALLEST_NUM and LARGEST_NUM.
+     */
     fun roll() {
         number = (SMALLEST_NUM..LARGEST_NUM).random()
     }
