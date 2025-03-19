@@ -19,7 +19,12 @@ class GameOverActivity : AppCompatActivity() {
         val returnButton: Button = findViewById(R.id.returnButton) // Ensure this ID is in your layout
 
         val isWinner = intent.getBooleanExtra("isWinner", false)
-        if (isWinner) {
+        val isOvershoot = intent.getBooleanExtra("isOvershoot", false)
+        
+        if (isOvershoot) {
+            winnerTextView.text = "Pooh overshot the branch and fell!"
+            winnerImageView.setImageResource(R.drawable.pooh_fall) // Ensure this drawable exists
+        } else if (isWinner) {
             winnerTextView.text = "Pooh reaches Branch 30 and gets some honey!"
             winnerImageView.setImageResource(R.drawable.pooh_honey) // Ensure this drawable exists
         } else {

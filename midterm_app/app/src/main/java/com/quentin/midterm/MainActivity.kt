@@ -179,6 +179,13 @@ class MainActivity : AppCompatActivity(),
                 true
             }
 
+            R.id.action_return_to_menu -> {
+                val intent = Intent(this, IntroActivity::class.java)
+                startActivity(intent)
+                finish()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -292,14 +299,24 @@ class MainActivity : AppCompatActivity(),
                     val intent = Intent(this@MainActivity, GameOverActivity::class.java)
                     intent.putExtra("isWinner", currentBranch >= 30)
                     startActivity(intent)
-                    finish() // Ensure the current activity is finished
+                    finish()
                 }
 
-                // Check for loss condition
+                // Check for loss condition 1 (overshooting the branch in hard mode)
+                if (currentBranch > winThreshold) {
+                    val intent = Intent(this@MainActivity, GameOverActivity::class.java)
+                    Log.d("Main Activity", "Overshot branch!")
+                    intent.putExtra("isOvershoot", true)
+                    startActivity(intent)
+                    finish()
+                    return
+                }
+
+                // Check for loss condition 2 (no rolls remaining)
                 if (rollsRemaining == 0) {
                     val intent = Intent(this@MainActivity, GameOverActivity::class.java)
                     startActivity(intent)
-                    finish() // Ensure the current activity is finished
+                    finish() 
                     return
                 }
             }
