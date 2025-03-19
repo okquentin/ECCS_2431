@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity(),
     RollLengthDialogFragment.OnRollLengthSelectedListener {
 
     private lateinit var messageTextView: TextView
-
     private lateinit var branchTextView: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var restartButton: Button
@@ -45,17 +44,18 @@ class MainActivity : AppCompatActivity(),
     private var initTouchX = 0
     private lateinit var gestureDetector: GestureDetectorCompat
 
-
-
     override fun onRollLengthClick(which: Int) {
         // Convert to milliseconds
         timerLength = 1000L * (which + 1)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Retrieve the difficulty level from the Intent
+        val difficulty = intent.getStringExtra("difficulty")
+        Log.d("MainActivity", "Selected difficulty: $difficulty")
 
         messageTextView = findViewById(R.id.messageText)
         branchTextView = findViewById(R.id.branchText)
@@ -210,7 +210,6 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun showDice() {
-
         // Show visible dice
         for (i in 0 until numVisibleDice) {
             val diceDrawable = ContextCompat.getDrawable(this, diceList[i].imageId)

@@ -11,13 +11,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
-        android:text="Number Power!"
+        android:text="@string/game_title"
         android:textSize="30sp"
         android:textStyle="bold" />
 
     <Button
-        android:id="@+id/startGameButton"
-        android:text="Start Game"
+        android:id="@+id/easyButton"
+        android:text="@string/easy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/normalButton"
+        android:text="@string/normal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/hardButton"
+        android:text="@string/hard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 </LinearLayout>

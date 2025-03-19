@@ -17,16 +17,9 @@
         android:icon="@drawable/roll"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/action_one"
-        android:title="@string/action_one"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/action_two"
-        android:title="@string/action_two"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/action_three"
-        android:title="@string/action_three"
-        app:showAsAction="never"/>
-
+    <item
+        android:id="@+id/action_return_to_menu"
+        android:title="@string/return_to_menu"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom" />
 </menu>

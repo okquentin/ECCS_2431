@@ -13,15 +13,26 @@ class IntroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro)
 
-        val startGameButton = findViewById<Button>(R.id.startGameButton)
+        val easyButton = findViewById<Button>(R.id.easyButton)
+        val normalButton = findViewById<Button>(R.id.normalButton)
+        val hardButton = findViewById<Button>(R.id.hardButton)
 
-        startGameButton.setOnClickListener {
-            startGame()
+        easyButton.setOnClickListener {
+            startGame("Easy")
+        }
+
+        normalButton.setOnClickListener {
+            startGame("Normal")
+        }
+
+        hardButton.setOnClickListener {
+            startGame("Hard")
         }
     }
 
-    private fun startGame() {
+    private fun startGame(difficulty: String) {
         val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("difficulty", difficulty)
         startActivity(intent)
         finish() // Close the intro screen
     }
