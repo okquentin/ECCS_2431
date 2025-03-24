@@ -316,12 +316,17 @@ class MainActivity : AppCompatActivity(),
 
                 if (diceValues[0] == diceValues[1]) {
                     currentBranch = maxOf(0, currentBranch - 4)
-                    messageTextView.text = "Doubles Penalty! Pooh slips down to Branch $currentBranch"
+                    if(currentBranch == 0) {
+                        messageTextView.text = "Doubles Penalty! Pooh falls off the tree!"
+                    } else {
+                        messageTextView.text = "Doubles Penalty! Pooh slips down to Branch $currentBranch"
+                    }
                 } else if (total == 4) {
                     messageTextView.text = "Windy Day Challenge! Pooh stays on Branch $currentBranch"
                 } else {
                     currentBranch += total
                     if (currentBranch > winThreshold && difficulty != "Hard") {
+                        Log.d("MainActivity", "currentBranch set to winThreshold (non hardmode)")
                         currentBranch = winThreshold
                     }
                     messageTextView.text = "Pooh climbs to Branch $currentBranch"
@@ -338,7 +343,7 @@ class MainActivity : AppCompatActivity(),
                 branchTextView.text = "Branch $currentBranch"
                 
                 // Check for win condition
-                if (currentBranch >= 30) {
+                if (currentBranch == 30) {
                     val intent = Intent(this@MainActivity, GameOverActivity::class.java)
                     intent.putExtra("isWinner", currentBranch >= 30)
                     startActivity(intent)
@@ -346,7 +351,7 @@ class MainActivity : AppCompatActivity(),
                 }
 
                 // Check for loss condition 1 (overshooting the branch in hard mode)
-                if (currentBranch > winThreshold) {
+                else if (currentBranch > winThreshold) {
                     val intent = Intent(this@MainActivity, GameOverActivity::class.java)
                     Log.d("Main Activity", "Overshot branch!")
                     intent.putExtra("isOvershoot", true)
@@ -356,7 +361,7 @@ class MainActivity : AppCompatActivity(),
                 }
 
                 // Check for loss condition 2 (no rolls remaining)
-                if (rollsRemaining == 0) {
+                else if (rollsRemaining == 0) {
                     val intent = Intent(this@MainActivity, GameOverActivity::class.java)
                     startActivity(intent)
                     finish() 
