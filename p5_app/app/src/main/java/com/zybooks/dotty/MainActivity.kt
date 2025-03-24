@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
       findViewById<Button>(R.id.new_game_button).setOnClickListener { newGameClick() }
 
       dotsView.setGridListener(gridListener)
-      SoundEffects.getInstance(applicationContext)
+      soundEffects = SoundEffects.getInstance(applicationContext)
 
       startNewGame()
    }
@@ -118,4 +118,4 @@ class MainActivity : AppCompatActivity() {
       scoreTextView.text = String.format(Locale.getDefault(), "%d", dotsGame.score)
    }
 }
- 
+
