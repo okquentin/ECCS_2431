@@ -14,12 +14,17 @@ class DotsGame private constructor() {
 
    var movesLeft = 0
    var score = 0
+   var currentRound = 1
+   private val requiredScores = listOf(10, 20, 30)
+
+   val isRoundComplete: Boolean
+      get() = score >= requiredScores[currentRound - 1]
+
+   val isGameOver: Boolean
+      get() = movesLeft == 0 || currentRound > requiredScores.size
 
    private val dotGrid = MutableList(GRID_SIZE) { MutableList(GRID_SIZE) { Dot() } }
    private val selectedDotList = mutableListOf<Dot>()
-
-   val isGameOver: Boolean
-      get() = movesLeft == 0
 
    val selectedDots: List<Dot>
       get() = Collections.unmodifiableList(selectedDotList)
@@ -88,6 +93,13 @@ class DotsGame private constructor() {
       }
    }
 
+   fun nextRound() {
+      if (currentRound < requiredScores.size) {
+         currentRound++
+         newGame()
+      }
+   }
+
    // Attempt to add or remove the dot to/from selected dots list
    fun processDot(dot: Dot): DotStatus {
       var status = DotStatus.Rejected
@@ -152,4 +164,4 @@ class DotsGame private constructor() {
       }
    }
 }
- 
+

@@ -10,6 +10,8 @@ import java.util.Locale
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.os.CountDownTimer
+import android.content.Intent
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,7 +20,9 @@ class MainActivity : AppCompatActivity() {
    private lateinit var movesRemainingTextView: TextView
    private lateinit var scoreTextView: TextView
    private lateinit var soundEffects: SoundEffects
-
+   private lateinit var timer: CountDownTimer
+   private lateinit var timerTextView: TextView
+   private var totalTimeInMillis: Long = 60 * 1000L
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -28,16 +32,19 @@ class MainActivity : AppCompatActivity() {
       scoreTextView = findViewById(R.id.score_text_view)
       dotsView = findViewById(R.id.dots_view)
       findViewById<Button>(R.id.new_game_button).setOnClickListener { newGameClick() }
+      timerTextView = findViewById(R.id.timer_text_view)
 
       dotsView.setGridListener(gridListener)
       soundEffects = SoundEffects.getInstance(applicationContext)
 
       startNewGame()
+      startTimer(totalTimeInMillis)
    }
 
    override fun onDestroy() {
       super.onDestroy()
       soundEffects.release()
+      timer.cancel()
    }
 
    private val gridListener = object : DotsGridListener {
@@ -79,8 +86,19 @@ class MainActivity : AppCompatActivity() {
          dotsView.invalidate()
          updateMovesAndScore()
 
-         if(dotsGame.isGameOver) {
+         if (dotsGame.isRoundComplete) {
+            soundEffects.playVictory()
+            dotsGame.nextRound()
+            if (dotsGame.isGameOver) {
+               startActivity(Intent(this@MainActivity, VictoryActivity::class.java))
+               finish()
+            } else {
+               startNewGame()
+            }
+         } else if (dotsGame.isGameOver) {
             soundEffects.playGameOver()
+            startActivity(Intent(this@MainActivity, FailureActivity::class.java))
+            finish()
          }
       }
    }
@@ -111,6 +129,26 @@ class MainActivity : AppCompatActivity() {
       dotsGame.newGame()
       dotsView.invalidate()
       updateMovesAndScore()
+   }
+
+   private fun startTimer(timeInMillis: Long) {
+      timer = object : CountDownTimer(timeInMillis, 1000) {
+         override fun onTick(millisUntilFinished: Long) {
+            totalTimeInMillis = millisUntilFinished
+            val minutes = millisUntilFinished / 1000 / 60
+            val seconds = millisUntilFinished / 1000 % 60
+            timerTextView.text = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+         }
+
+         override fun onFinish() {
+            if (!dotsGame.isRoundComplete) {
+               soundEffects.playGameOver()
+               startActivity(Intent(this@MainActivity, FailureActivity::class.java))
+               finish()
+            }
+         }
+      }
+      timer.start()
    }
 
    private fun updateMovesAndScore() {

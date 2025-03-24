@@ -10,6 +10,7 @@ class SoundEffects private constructor(context: Context){
    private val selectSoundIds = mutableListOf<Int>()
    private var soundIndex = 0
    private var endGameSoundId = 0
+   private var victorySoundId = 0
 
    companion object {
       private var instance: SoundEffects? = null
@@ -39,6 +40,7 @@ class SoundEffects private constructor(context: Context){
          selectSoundIds.add(it.load(context, R.raw.note_g, 1))
 
          endGameSoundId = it.load(context, R.raw.game_over, 1)
+         victorySoundId = it.load(context, R.raw.victory_sound, 1)
       }
 
       resetTones()
@@ -68,9 +70,13 @@ class SoundEffects private constructor(context: Context){
       soundPool?.play(endGameSoundId, 0.5f, 0.5f, 1, 0, 1f)
    }
 
+   fun playVictory() {
+      soundPool?.play(victorySoundId, 1f, 1f, 1, 0, 1f)
+   }
+
    fun release() {
       soundPool?.release()
       soundPool = null
    }
 }
- 
+
