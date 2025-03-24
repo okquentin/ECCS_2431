@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.zybooks.dotty.DotsView.DotsGridListener
 import java.util.Locale
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
+
 class MainActivity : AppCompatActivity() {
 
    private val dotsGame = DotsGame.getInstance()
@@ -40,8 +44,10 @@ class MainActivity : AppCompatActivity() {
          // If done selecting dots then replace selected dots and display new moves and score
          if (status === DotSelectionStatus.Last) {
             if (dotsGame.selectedDots.size > 1) {
-               dotsGame.finishMove()
-               updateMovesAndScore()
+               dotsView.animateDots()
+
+               //dotsGame.finishMove()
+              //updateMovesAndScore()
             } else {
                dotsGame.clearSelectedDots()
             }
@@ -50,10 +56,33 @@ class MainActivity : AppCompatActivity() {
          // Display changes to the game
          dotsView.invalidate()
       }
+      override fun onAnimationFinished() {
+         dotsGame.finishMove()
+         dotsView.invalidate()
+         updateMovesAndScore()
+      }
    }
 
    private fun newGameClick() {
-      startNewGame()
+            // Animate down off screen
+            val screenHeight = this.window.decorView.height.toFloat()
+            val moveBoardOff = ObjectAnimator.ofFloat(
+            dotsView, "translationY", screenHeight)
+            moveBoardOff.duration = 700
+            moveBoardOff.start()
+      
+            moveBoardOff.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+               startNewGame()
+   
+               // Animate from above the screen down to default location
+               val moveBoardOn = ObjectAnimator.ofFloat(
+                  dotsView, "translationY", -screenHeight, 0f)
+               moveBoardOn.duration = 700
+               moveBoardOn.start()
+            }
+         }
+      )
    }
 
    private fun startNewGame() {
