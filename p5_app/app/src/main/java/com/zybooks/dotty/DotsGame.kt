@@ -23,6 +23,10 @@ class DotsGame private constructor() {
    val isGameOver: Boolean
       get() = movesLeft == 0 || currentRound > requiredScores.size
 
+   fun getRequiredScores(): List<Int> {
+      return requiredScores
+   }
+
    private val dotGrid = MutableList(GRID_SIZE) { MutableList(GRID_SIZE) { Dot() } }
    private val selectedDotList = mutableListOf<Dot>()
 

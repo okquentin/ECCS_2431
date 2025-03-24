@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
    private lateinit var soundEffects: SoundEffects
    private lateinit var timer: CountDownTimer
    private lateinit var timerTextView: TextView
+   private lateinit var roundInfoTextView: TextView
+   private lateinit var roundPassedTextView: TextView
    private var totalTimeInMillis: Long = 60 * 1000L
 
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +35,8 @@ class MainActivity : AppCompatActivity() {
       dotsView = findViewById(R.id.dots_view)
       findViewById<Button>(R.id.new_game_button).setOnClickListener { newGameClick() }
       timerTextView = findViewById(R.id.timer_text_view)
+      roundInfoTextView = findViewById(R.id.round_info_text_view)
+      roundPassedTextView = findViewById(R.id.round_passed_text_view)
 
       dotsView.setGridListener(gridListener)
       soundEffects = SoundEffects.getInstance(applicationContext)
@@ -88,6 +92,7 @@ class MainActivity : AppCompatActivity() {
 
          if (dotsGame.isRoundComplete) {
             soundEffects.playVictory()
+            showRoundPassedMessage()
             dotsGame.nextRound()
             if (dotsGame.isGameOver) {
                startActivity(Intent(this@MainActivity, VictoryActivity::class.java))
@@ -129,6 +134,7 @@ class MainActivity : AppCompatActivity() {
       dotsGame.newGame()
       dotsView.invalidate()
       updateMovesAndScore()
+      updateRoundInfo()
    }
 
    private fun startTimer(timeInMillis: Long) {
@@ -154,6 +160,27 @@ class MainActivity : AppCompatActivity() {
    private fun updateMovesAndScore() {
       movesRemainingTextView.text = String.format(Locale.getDefault(), "%d", dotsGame.movesLeft)
       scoreTextView.text = String.format(Locale.getDefault(), "%d", dotsGame.score)
+      updateRoundInfo()
+   }
+
+   private fun updateRoundInfo() {
+      val requiredScore = dotsGame.getRequiredScores()[dotsGame.currentRound - 1]
+      val remainingScore = requiredScore - dotsGame.score
+      roundInfoTextView.text = String.format(Locale.getDefault(), "Round %d: Score %d more connections", dotsGame.currentRound, remainingScore)
+   }
+
+   private fun showRoundPassedMessage() {
+      roundPassedTextView.visibility = TextView.VISIBLE
+      val screenWidth = this.window.decorView.width.toFloat()
+      val moveMessage = ObjectAnimator.ofFloat(
+         roundPassedTextView, "translationX", -screenWidth, screenWidth)
+      moveMessage.duration = 2000
+      moveMessage.start()
+      moveMessage.addListener(object : AnimatorListenerAdapter() {
+         override fun onAnimationEnd(animation: Animator) {
+            roundPassedTextView.visibility = TextView.GONE
+         }
+      })
    }
 }
 
