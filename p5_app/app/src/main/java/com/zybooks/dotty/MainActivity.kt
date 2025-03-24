@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
    private lateinit var dotsView: DotsView
    private lateinit var movesRemainingTextView: TextView
    private lateinit var scoreTextView: TextView
+   private lateinit var soundEffects: SoundEffects
+
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -25,21 +27,37 @@ class MainActivity : AppCompatActivity() {
       movesRemainingTextView = findViewById(R.id.moves_remaining_text_view)
       scoreTextView = findViewById(R.id.score_text_view)
       dotsView = findViewById(R.id.dots_view)
-
       findViewById<Button>(R.id.new_game_button).setOnClickListener { newGameClick() }
 
       dotsView.setGridListener(gridListener)
+      SoundEffects.getInstance(applicationContext)
 
       startNewGame()
+   }
+
+   override fun onDestroy() {
+      super.onDestroy()
+      soundEffects.release()
    }
 
    private val gridListener = object : DotsGridListener {
       override fun onDotSelected(dot: Dot, status: DotSelectionStatus) {
          // Ignore selections when game is over
          if (dotsGame.isGameOver) return
-
-         // Add/remove dot to/from selected dots
+         
+         // Play first tone when first dot is selected
+         if (status == DotSelectionStatus.First) {
+            soundEffects.resetTones()
+         }
+         
+         // Select the dot and play the right tone 
          val addStatus = dotsGame.processDot(dot)
+
+         if (addStatus == DotStatus.Added) {
+            soundEffects.playTone(true)
+         } else if (addStatus == DotStatus.Removed) {
+            soundEffects.playTone(false)
+         }
 
          // If done selecting dots then replace selected dots and display new moves and score
          if (status === DotSelectionStatus.Last) {
@@ -60,6 +78,10 @@ class MainActivity : AppCompatActivity() {
          dotsGame.finishMove()
          dotsView.invalidate()
          updateMovesAndScore()
+
+         if(dotsGame.isGameOver) {
+            soundEffects.playGameOver()
+         }
       }
    }
 
